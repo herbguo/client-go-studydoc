@@ -155,7 +155,7 @@ func Load(data []byte) (*clientcmdapi.Config, error) {
 
 多个配置信息合并如图所示：
 
-![](assets\多个kubeconfig配置信息合并.svg)
+![](assets/多个kubeconfig配置信息合并.svg)
 
 
 **源码路径**：k8s.io\client-go\tools\clientcmd\loader.go
@@ -325,7 +325,7 @@ ClientSet在RESTClient的基础上封装了对Resource和Version的管理方法�
 
 > **注意**：ClientSet仅能访问Kubernetes自身的内置资源，不能直接访问CRD自定义资源；如果需要使用ClientSet访问CRD，则需要通过client-gen代码生成器重新生成ClientSet；DynamicClient可以访问CRD资源
 
-![](assets\多ClientSet多资源集合.svg)
+![](assets/多ClientSet多资源集合.svg)
 
 #### 2.3.1 代码练习
 
@@ -515,7 +515,7 @@ DiscoveryClient第一次获取资源组，资源版本，资源信息时，首�
 
 流程如图所示：
 
-![](assets\本地缓存的DiscoveryClient.svg)
+![](assets/本地缓存的DiscoveryClient.svg)
 
 **源码路径**：k8s.io\client-go\discovery\cached\disk\cached_discovery.go
 
