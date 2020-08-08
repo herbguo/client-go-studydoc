@@ -152,10 +152,10 @@ func Load(data []byte) (*clientcmdapi.Config, error) {
 
 多个配置信息合并如图所示：
 
-![多个kubeconfig配置信息合并](assets\多个kubeconfig配置信息合并.svg)
+![](assets\多个kubeconfig配置信息合并.svg)
+
 
 **源码路径：**k8s.io\client-go\tools\clientcmd\loader.go
-
 ```go
 func (rules *ClientConfigLoadingRules) Load() (*clientcmdapi.Config, error) {
 	
@@ -313,6 +313,7 @@ func (r *Request) request(ctx context.Context, fn func(*http.Request, *http.Resp
 	}
 }
 ```
+
 ### 2.3 ClientSet客户端
 RESTClient是最基础的客户端，使用时需要指定Resource和Version等信息，编写代码时需要提前知道Resource所在的Group和对应的Version信息。ClientSet相比而言使用更加便捷，一般情况，对Kubernetes进行二次开发时通常使用ClientSet。
 ClientSet在RESTClient的基础上封装了对Resource和Version的管理方法，每个Resource可以理解为一个客户端，而ClientSet则是多个客户端的集合，每个Resource和Version都以函数的方式暴露给开发者。
@@ -398,6 +399,7 @@ func (c *pods) List(ctx context.Context, opts metav1.ListOptions) (result *v1.Po
 	return
 }
 ```
+
 ### 2.4 DynamicClient客户端
 DynamicClient客户端是一种动态客户端，可以对任意的Kubernetes资源进行RESTful操作，包括CRD资源。
 DynamicClient内部实现了Unstructured，用于处理非结构化数据结构（即无法提前预知的数据结构），这也是DynamicClient能够处理CRD资源的关键。
@@ -433,6 +435,7 @@ func TestDynamicClient(t *testing.T) {
 	}
 }
 ```
+
 ### 2.5 DiscoveryClient客户端
 DiscoveryClient是发现客户端，主要用于发现Kubenetes API Server所支持的资源组、资源版本、资源信息。
 kubectl的api-versions和api-resources命令输出也是通过DiscoveryClient实现的。其同样是在RESTClient的基础上进行的封装。DiscoveryClient还可以将资源组、资源版本、资源信息等存储在本地，用于本地缓存，减轻对kubernetes api sever的访问压力，缓存信息默认存储在：~/.kube/cache和~/.kube/http-cache下。
