@@ -104,7 +104,9 @@ func main() {
 
 ```clientcmd.BuildConfigFromFlags```函数会读取kubeconfig配置信息并实例化rest.Config对象。其中kubeconfig最核心的功能是管理多个访问kube-apiserver集群配置信息，并将多个配置信息合并(merge)成一份，在合并的过程中会解决多个配置文件字段的冲突问题。该过程由```Load```函数完成，分为两步：①加载kubeconfig配置信息；②合并多个kubeconfig配置信息。
 #### 2.1.2 加载kubeconfig配置信息
-**源码路径：**k8s.io\client-go\tools\clientcmd\loader.go
+
+**源码路径**：k8s.io\client-go\tools\clientcmd\loader.go
+
 ```go
 func (rules *ClientConfigLoadingRules) Load() (*clientcmdapi.Config, error) {
 	
@@ -134,7 +136,8 @@ func (rules *ClientConfigLoadingRules) Load() (*clientcmdapi.Config, error) {
 ```
 
 ```LoadFromFile```函数的Load方法如下：
-**源码路径：**k8s.io\client-go\tools\clientcmd\loader.go
+
+**源码路径**：k8s.io\client-go\tools\clientcmd\loader.go
 ```go
 // Load takes a byte slice and deserializes the contents into Config object.
 // Encapsulates deserialization without assuming the source is a file.
@@ -155,7 +158,7 @@ func Load(data []byte) (*clientcmdapi.Config, error) {
 ![](assets\多个kubeconfig配置信息合并.svg)
 
 
-**源码路径：**k8s.io\client-go\tools\clientcmd\loader.go
+**源码路径**：k8s.io\client-go\tools\clientcmd\loader.go
 ```go
 func (rules *ClientConfigLoadingRules) Load() (*clientcmdapi.Config, error) {
 	
@@ -190,7 +193,7 @@ func (rules *ClientConfigLoadingRules) Load() (*clientcmdapi.Config, error) {
 从代码中可以看出，merge分为四步，①先将map类型的config进行合并到mapConfig中；②将非map类型的配置合并到nonMapConfig中；@将mapConfig合并到config中；④将nonMapConfig合并到config中；
 ### 2.2 RESTClient客户端
 RESTClient是最基础的客户端，其他的ClientSet、DynamicClient及DiscoveryClient都是基于RESTClient实现的。RESTClient对HTTP Request进行了封装，实现了RESTful风格的API。 
-#### 2.2.1代码练习
+#### 2.2.1 代码练习
 ```go
 import (
 	"context"
@@ -243,7 +246,8 @@ func TestRestClient(t *testing.T) {
 ```
 #### 2.2.2 源码分析
 由上练习得知，RESTClient发送请求的过程对Go语言的标准库```net/http```进行了封装，由```Do—>request```函数实现，源码如下：
-**源码路径：**k8s.io\client-go\rest\request.go
+
+**源码路径**：k8s.io\client-go\rest\request.go
 ```go
 func (r *Request) Do(ctx context.Context) Result {
 	var result Result
@@ -256,8 +260,9 @@ func (r *Request) Do(ctx context.Context) Result {
 	return result
 }
 ```
-其中，```r.transformResponse(resp, req)```作为传入函数的函数体；是真正对result对象进行解析的函数。```request```函数源码如下。
-**源码路径：**k8s.io\client-go\rest\request.go
+其中，```r.transformResponse(resp, req)```作为传入函数的函数体；是真正对result对象进行解析的函数。```request```函数源码如下:
+
+**源码路径**：k8s.io\client-go\rest\request.go
 ```go
 func (r *Request) request(ctx context.Context, fn func(*http.Request, *http.Response)) error {
 	......
@@ -318,7 +323,7 @@ func (r *Request) request(ctx context.Context, fn func(*http.Request, *http.Resp
 RESTClient是最基础的客户端，使用时需要指定Resource和Version等信息，编写代码时需要提前知道Resource所在的Group和对应的Version信息。ClientSet相比而言使用更加便捷，一般情况，对Kubernetes进行二次开发时通常使用ClientSet。
 ClientSet在RESTClient的基础上封装了对Resource和Version的管理方法，每个Resource可以理解为一个客户端，而ClientSet则是多个客户端的集合，每个Resource和Version都以函数的方式暴露给开发者。
 
-> **注意：**ClientSet仅能访问Kubernetes自身的内置资源，不能直接访问CRD自定义资源；如果需要使用ClientSet访问CRD，则需要通过client-gen代码生成器重新生成ClientSet；DynamicClient可以访问CRD资源
+> **注意**：ClientSet仅能访问Kubernetes自身的内置资源，不能直接访问CRD自定义资源；如果需要使用ClientSet访问CRD，则需要通过client-gen代码生成器重新生成ClientSet；DynamicClient可以访问CRD资源
 
 ![](assets\多ClientSet多资源集合.svg)
 
@@ -347,7 +352,8 @@ func TestClientSet(t *testing.T) {
 ```
 #### 2.3.2 源码分析
 1. 追踪```kubernetes.NewForConfig(config)```函数，可以看到，针对不同的资源类型，都有一个```NewForConfig```函数,源码如下：
-**源码路径：**k8s.io\client-go\kubernetes\clientset.go
+
+**源码路径**：k8s.io\client-go\kubernetes\clientset.go
 ```go
 func NewForConfig(c *rest.Config) (*Clientset, error) {
 	......
@@ -369,7 +375,8 @@ func NewForConfig(c *rest.Config) (*AppsV1Client, error) {
 }
 ```
 2. 追踪Pods函数的代码，可以看到返回的pods函数对象中的client为RESTClient，源码如下：
-**源码路径：**k8s.io\client-go\kubernetes\typed\core\v1\pod.go
+
+**源码路径**：k8s.io\client-go\kubernetes\typed\core\v1\pod.go
 ```go
 func newPods(c *CoreV1Client, namespace string) *pods {
 	return &pods{
@@ -380,7 +387,8 @@ func newPods(c *CoreV1Client, namespace string) *pods {
 }
 ```
 3. 追踪的Pods函数的List方法源码如下：
-**源码路径：**k8s.io\client-go\kubernetes\typed\core\v1\pod.go
+
+**源码路径**：k8s.io\client-go\kubernetes\typed\core\v1\pod.go
 ```go
 func (c *pods) List(ctx context.Context, opts metav1.ListOptions) (result *v1.PodList, err error) {
 	var timeout time.Duration
@@ -439,7 +447,7 @@ func TestDynamicClient(t *testing.T) {
 ### 2.5 DiscoveryClient客户端
 DiscoveryClient是发现客户端，主要用于发现Kubenetes API Server所支持的资源组、资源版本、资源信息。
 kubectl的api-versions和api-resources命令输出也是通过DiscoveryClient实现的。其同样是在RESTClient的基础上进行的封装。DiscoveryClient还可以将资源组、资源版本、资源信息等存储在本地，用于本地缓存，减轻对kubernetes api sever的访问压力，缓存信息默认存储在：~/.kube/cache和~/.kube/http-cache下。
-#### 2.5.1代码练习
+#### 2.5.1 代码练习
 ```go
 func TestDiscoveryClient(t *testing.T) {
 	config, err := clientcmd.BuildConfigFromFlags("", "F:\\code\\env\\config")
@@ -467,7 +475,8 @@ func TestDiscoveryClient(t *testing.T) {
 ```
 #### 2.5.2获取Kubernetes API Server所支持的资源组、资源版本及资源信息
 DiscoveryClient通过RESTClient分别请求/api和/apis接口，从而获取Kubernetes API Server的信息，其核心实现位于ServerGroupsAndResources —> ServerGroups中。
-**源码路径：**k8s.io\client-go\discovery\discovery_client.go
+
+**源码路径**：k8s.io\client-go\discovery\discovery_client.go
 ```go
 func (d *DiscoveryClient) ServerGroups() (apiGroupList *metav1.APIGroupList, err error) {
 	// Get the groupVersions exposed at /api
@@ -503,10 +512,12 @@ func (d *DiscoveryClient) ServerGroups() (apiGroupList *metav1.APIGroupList, err
 #### 2.5.3 本地缓存的DiscoveryClient
 DiscoveryClient可将资源相关信息存储在本地，默认每10分钟与kubernetes api server同步一次。
 DiscoveryClient第一次获取资源组，资源版本，资源信息时，首先会查询本地缓存，如果数据不存在（没有命中）则请求Kubernetes API Server接口（回源），Cache将Kubernetes API Server响应的数据存储在本地一份并返回给DiscoveryClient。当下一次DiscoveryClient再次获取资源信息时，会将数据直接从本地缓存返回（命中）给DiscoveryClient。本地缓存的默认存储周期为10分钟。
+
 流程如图所示：
+
 ![](assets\本地缓存的DiscoveryClient.svg)
 
-**源码路径：**k8s.io\client-go\discovery\cached\disk\cached_discovery.go
+**源码路径**：k8s.io\client-go\discovery\cached\disk\cached_discovery.go
 
 ```go
 func (d *CachedDiscoveryClient) ServerGroups() (*metav1.APIGroupList, error) {
