@@ -318,8 +318,11 @@ RESTClient是最基础的客户端，使用时需要指定Resource和Version等�
 ClientSet在RESTClient的基础上封装了对Resource和Version的管理方法，每个Resource可以理解为一个客户端，而ClientSet则是多个客户端的集合，每个Resource和Version都以函数的方式暴露给开发者。
 
 > **注意：**ClientSet仅能访问Kubernetes自身的内置资源，不能直接访问CRD自定义资源；如果需要使用ClientSet访问CRD，则需要通过client-gen代码生成器重新生成ClientSet；DynamicClient可以访问CRD资源
+
 ![](assets\多ClientSet多资源集合.svg)
+
 #### 2.3.1 代码练习
+
 ```go
 func TestClientSet(t *testing.T) {
 	config, err := clientcmd.BuildConfigFromFlags("", "F:\\code\\env\\config")
@@ -400,6 +403,7 @@ DynamicClient客户端是一种动态客户端，可以对任意的Kubernetes资
 DynamicClient内部实现了Unstructured，用于处理非结构化数据结构（即无法提前预知的数据结构），这也是DynamicClient能够处理CRD资源的关键。
 > DynamicClient不是类型安全的，因此在访问CRD自定义资源是要注意，例如，在操作不当时可能会导致程序崩溃。
 DynamicClient的处理过程是将Resource(如PodList)转换成Unstructured结构类型，Kubernetes的所有Resource都可以转换为该结构类型。处理完后再将Unstructured转换成PodList。过程类似于Go语言的interface{}断言转换过程。另外，Unstructured结构类型是通过map[string]interface{}转换的。
+
 #### 2.4.1 代码练习
 ```go
 func TestDynamicClient(t *testing.T) {
