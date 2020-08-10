@@ -545,4 +545,4 @@ func (d *CachedDiscoveryClient) ServerGroups() (*metav1.APIGroupList, error) {
 	return liveGroups, nil
 }
 ```
-通过源码可知，DiscoveryClient是通过创建的Client是DiscoveryClient还是CachedDiscoveryClient来决定是从缓存中读取还是从api-server中进行读取。然后再去查看Client生成的代码逻辑。是创建DiscoveryClient还是创建CachedDiscoveryClient这块逻辑还没有捋清。
+通过源码可知，DiscoveryClient是通过创建的Client是DiscoveryClient还是CachedDiscoveryClient来决定是从缓存中读取还是从api-server中进行读取。
